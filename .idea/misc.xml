@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/project/SdkDemo/SdkDemo/app/src/main/res/layout/activity_heart_test.xml" value="0.358695652173913" />
+        <entry key="..\:/project/SdkDemo/SdkDemo/app/src/main/res/xml/file_paths.xml" value="0.15260416666666668" />
+        <entry key="..\:/work/project/android_plus/dingzhisdkdemo/app/src/main/res/drawable/dialog_open_notice.xml" value="0.138" />
+        <entry key="..\:/work/project/android_plus/dingzhisdkdemo/app/src/main/res/layout/activity_firmware.xml" value="0.25769927536231885" />
+        <entry key="..\:/work/project/android_plus/dingzhisdkdemo/app/src/main/res/layout/activity_main.xml" value="0.32382246376811596" />
+        <entry key="..\:/work/project/android_plus/dingzhisdkdemo/app/src/main/res/layout/dialog_notice_open.xml" value="0.16666666666666666" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_alarm.xml" value="0.2125" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_datumline.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_device_state.xml" value="0.17760416666666667" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_dial_center.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_disturb.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_drink_water.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_firmware.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_goal.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_heart_warn.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_main.xml" value="0.3181818181818182" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_notice.xml" value="0.1875" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_scan_device.xml" value="0.23125" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_sport_mode.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_telepho.xml" value="0.2125" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_temp_waring.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_user_info.xml" value="0.17760416666666667" />
+        <entry key="..\:/work/sdk/dingzhisdkdemo/SDKDemo/app/src/main/res/layout/activity_weather.xml" value="0.21965579710144928" />
+        <entry key="..\:/work/sdk/sdkdemo/SDKDemo/app/src/main/res/layout/activity_main.xml" value="0.3265625" />
+        <entry key="..\:/work/sdk/sdkdemo/SDKDemo/app/src/main/res/layout/activity_steps.xml" value="0.18229166666666666" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
