@@ -78,8 +78,8 @@
 
             <Button
                 android:id="@+id/btnNoticeInfo"
-                android:text="获取设备通知开关"
-                android:visibility="gone"
+                android:text="get_device_notice"
+                android:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"/>

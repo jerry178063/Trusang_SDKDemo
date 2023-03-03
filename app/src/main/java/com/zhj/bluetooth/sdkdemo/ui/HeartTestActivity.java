@@ -1,5 +1,8 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_END_HEART_TEST;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_START_HEART_TEST;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,7 +46,9 @@ public class    HeartTestActivity extends BaseActivity {
         BleSdkWrapper.startHeartTest(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                LogUtil.d("Heart rate monitoring has started");
+                if(handlerBleDataResult.bluetooth_code == CODE_START_HEART_TEST) {
+                    LogUtil.d("Heart rate monitoring has started");
+                }
             }
 
             @Override
@@ -63,7 +68,9 @@ public class    HeartTestActivity extends BaseActivity {
         BleSdkWrapper.endHeartTest(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                LogUtil.d("Heart rate monitoring has ended");
+                if(handlerBleDataResult.bluetooth_code == CODE_END_HEART_TEST) {
+                    LogUtil.d("Heart rate monitoring has ended");
+                }
             }
 
             @Override

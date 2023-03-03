@@ -213,5 +213,5 @@
     <string name="cup_of_water" tools:ignore="ExtraTranslation">Cup of water</string>
     <string name="message_notification_switch" tools:ignore="ExtraTranslation">Message notification switch</string>
 
-
+    <string name="permisson_notication_tips_keep">"Open the notification bar permission, app can be notified normally"</string>
 </resources>

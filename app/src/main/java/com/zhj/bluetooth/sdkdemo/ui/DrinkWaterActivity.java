@@ -1,5 +1,7 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_DRINK_WATER_WARM;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.view.View;
 
@@ -39,13 +41,15 @@ public class DrinkWaterActivity extends BaseActivity {
         BleSdkWrapper.getDrinkWaterWarm(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                if(handlerBleDataResult.isComplete){
-                    if(!handlerBleDataResult.hasNext){
-                        drinkWaterBean = (DrinkWaterBean) handlerBleDataResult.data;
-                        itDrinkWater.setOpen(drinkWaterBean.isSwitch());
-                        DrinkWaterAdapter adapter = new DrinkWaterAdapter(DrinkWaterActivity.this,drinkWaterBean.getmList());
-                        mRecyclerView.setAdapter(adapter);
-                        rightText.setText(getResources().getString(R.string.scan_device_set) + ":"+drinkWaterBean.getWaterGoal());
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_DRINK_WATER_WARM) {
+                    if (handlerBleDataResult.isComplete) {
+                        if (!handlerBleDataResult.hasNext) {
+                            drinkWaterBean = (DrinkWaterBean) handlerBleDataResult.data;
+                            itDrinkWater.setOpen(drinkWaterBean.isSwitch());
+                            DrinkWaterAdapter adapter = new DrinkWaterAdapter(DrinkWaterActivity.this, drinkWaterBean.getmList());
+                            mRecyclerView.setAdapter(adapter);
+                            rightText.setText(getResources().getString(R.string.scan_device_set) + ":" + drinkWaterBean.getWaterGoal());
+                        }
                     }
                 }
             }

@@ -1,5 +1,7 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_DEVICE_STATE;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.text.TextUtils;
 import android.view.View;
@@ -51,28 +53,30 @@ public class DeviceStateActivity extends BaseActivity {
         BleSdkWrapper.getDeviceState(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                deviceState = (DeviceState) handlerBleDataResult.data;
-                if(deviceState != null) {
-                    tvScreenLight.setText(getResources().getString(R.string.device_state_screen_brightness) + deviceState.screenLight);
-                    tvScreenTime.setText(getResources().getString(R.string.device_state_bright_duration) + deviceState.screenTime);
-                    tvScreenTheme.setText(getResources().getString(R.string.device_state_theme) + deviceState.theme);
-                    //  0x00: English 0x01: Chinese 0x02: Russian 0x03: Ukrainian 0x04: French 0x05: Spanish
-                    //  0x06: Portuguese 0x07: German 0x08: Japan 0x09: Poland 0x0A: Italy
-                    //0x0B: Romania 0x0C: Traditional Chinese 0x0D: Korean
-                    tvLanguage.setText(getResources().getString(R.string.device_state_language) + deviceState.language);
-                    //0x00: Metric 0x01: English
-                    tvUnit.setText(getResources().getString(R.string.device_state_unit) + deviceState.unit);
-                    //0x00:24 hour system 0x01:12 hour system
-                    tvTimeFormat.setText(getResources().getString(R.string.device_state_time_system) + deviceState.timeFormat);
-                    //0x00: Off 0x01: On
-                    tvUpHander.setText(getResources().getString(R.string.device_state_handle_up) + deviceState.upHander);
-                    //0x00: Off 0x01: On
-                    tvMusic.setText(getResources().getString(R.string.device_state_music_control) + deviceState.isMusic);
-                    //0x00: Off 0x01: On
-                    tvNotice.setText(getResources().getString(R.string.device_state_messagr_swith) + deviceState.isNotice);
-                    //0x01: left 0x02: right other: invalid
-                    tvHandHabits.setText(getResources().getString(R.string.device_state_hand_hibits) + deviceState.handHabits);
-                    tvHandHabits.setText(getResources().getString(R.string.body_temperature_unit) + deviceState.tempUnit);
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_DEVICE_STATE) {
+                    deviceState = (DeviceState) handlerBleDataResult.data;
+                    if (deviceState != null) {
+                        tvScreenLight.setText(getResources().getString(R.string.device_state_screen_brightness) + deviceState.screenLight);
+                        tvScreenTime.setText(getResources().getString(R.string.device_state_bright_duration) + deviceState.screenTime);
+                        tvScreenTheme.setText(getResources().getString(R.string.device_state_theme) + deviceState.theme);
+                        //  0x00: English 0x01: Chinese 0x02: Russian 0x03: Ukrainian 0x04: French 0x05: Spanish
+                        //  0x06: Portuguese 0x07: German 0x08: Japan 0x09: Poland 0x0A: Italy
+                        //0x0B: Romania 0x0C: Traditional Chinese 0x0D: Korean
+                        tvLanguage.setText(getResources().getString(R.string.device_state_language) + deviceState.language);
+                        //0x00: Metric 0x01: English
+                        tvUnit.setText(getResources().getString(R.string.device_state_unit) + deviceState.unit);
+                        //0x00:24 hour system 0x01:12 hour system
+                        tvTimeFormat.setText(getResources().getString(R.string.device_state_time_system) + deviceState.timeFormat);
+                        //0x00: Off 0x01: On
+                        tvUpHander.setText(getResources().getString(R.string.device_state_handle_up) + deviceState.upHander);
+                        //0x00: Off 0x01: On
+                        tvMusic.setText(getResources().getString(R.string.device_state_music_control) + deviceState.isMusic);
+                        //0x00: Off 0x01: On
+                        tvNotice.setText(getResources().getString(R.string.device_state_messagr_swith) + deviceState.isNotice);
+                        //0x01: left 0x02: right other: invalid
+                        tvHandHabits.setText(getResources().getString(R.string.device_state_hand_hibits) + deviceState.handHabits);
+                        tvHandHabits.setText(getResources().getString(R.string.body_temperature_unit) + deviceState.tempUnit);
+                    }
                 }
             }
 

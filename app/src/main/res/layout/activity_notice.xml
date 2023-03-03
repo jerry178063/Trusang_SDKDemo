@@ -188,6 +188,15 @@
                 app:opened="true"
                 app:right_arrow="@mipmap/v_right_s"
                 app:valueTextColor="@color/small_font_color"/>
+
+            <TextView
+                android:id="@+id/tv_send_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="send msg"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+                android:textSize="18sp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

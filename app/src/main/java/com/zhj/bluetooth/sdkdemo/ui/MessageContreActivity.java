@@ -1,5 +1,7 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_NOTICE;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.view.View;
 
@@ -45,7 +47,9 @@ public class MessageContreActivity extends BaseActivity {
         BleSdkWrapper.getNotice(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                AppNotice appNotice = (AppNotice) handlerBleDataResult.data;
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_NOTICE) {
+                    AppNotice appNotice = (AppNotice) handlerBleDataResult.data;
+                }
             }
 
             @Override

@@ -1,5 +1,7 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_ALARM_CLOCK;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,10 +41,12 @@ public class AlarmActivity extends BaseActivity {
         BleSdkWrapper.getAlarmList(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                if(handlerBleDataResult.isComplete){
-                    alarmList = (List<Alarm>) handlerBleDataResult.data;
-                    mAdapter = new AlarmListAdapter(AlarmActivity.this,alarmList);
-                    mRecyclerView.setAdapter(mAdapter);
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_ALARM_CLOCK) {
+                    if (handlerBleDataResult.isComplete) {
+                        alarmList = (List<Alarm>) handlerBleDataResult.data;
+                        mAdapter = new AlarmListAdapter(AlarmActivity.this, alarmList);
+                        mRecyclerView.setAdapter(mAdapter);
+                    }
                 }
             }
 

@@ -1,43 +1,42 @@
 package com.zhj.bluetooth.sdkdemo;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_DEVICE_STATE;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_NOTICE;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_REALTIME_HEARTRATE;
 import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SEND_MESSAGE;
 import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SEND_MESSAGE_P;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_DEVICE_DATE;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_DEVICE_SHOCK;
+import static com.zhj.zhjsdkcustomized.ble.CmdHelper.CMD_GET_DEVICE_STATE;
+import static com.zhj.zhjsdkcustomized.ble.bluetooth.BleManager.FLAT_START_GET_HEART_RATE;
 
 import android.Manifest;
-import android.app.Application;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.provider.MediaStore;
-import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
+import androidx.core.app.NotificationCompat;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.zhj.bluetooth.sdkdemo.base.BaseActivity;
-import com.zhj.bluetooth.sdkdemo.dialog.DialogHelperNew;
-import com.zhj.bluetooth.sdkdemo.sevice.IntelligentNotificationService;
+import com.zhj.bluetooth.sdkdemo.config.ForegroundNotification;
+import com.zhj.bluetooth.sdkdemo.config.ForegroundNotificationClickListener;
 import com.zhj.bluetooth.sdkdemo.sevice.ServiceWorker;
 import com.zhj.bluetooth.sdkdemo.ui.AlarmActivity;
 import com.zhj.bluetooth.sdkdemo.ui.DatumLineActivity;
@@ -55,11 +54,10 @@ import com.zhj.bluetooth.sdkdemo.ui.HeartWarnActivity;
 import com.zhj.bluetooth.sdkdemo.ui.LongSitActivity;
 import com.zhj.bluetooth.sdkdemo.ui.MessageContreActivity;
 import com.zhj.bluetooth.sdkdemo.ui.NoticeActivity;
-import com.zhj.bluetooth.sdkdemo.ui.PairingActivity;
+import com.zhj.bluetooth.sdkdemo.ui.NotificationActivity;
 import com.zhj.bluetooth.sdkdemo.ui.RateHistoryActivity;
 import com.zhj.bluetooth.sdkdemo.ui.RestingCalorieActivity;
 import com.zhj.bluetooth.sdkdemo.ui.ScanDeviceReadyActivity;
-import com.zhj.bluetooth.sdkdemo.ui.SleepDataActivity;
 import com.zhj.bluetooth.sdkdemo.ui.SportActivity;
 import com.zhj.bluetooth.sdkdemo.ui.SportModeActivity;
 import com.zhj.bluetooth.sdkdemo.ui.StepsDataActivity;
@@ -73,28 +71,29 @@ import com.zhj.bluetooth.sdkdemo.ui.UserInfoActivity;
 import com.zhj.bluetooth.sdkdemo.ui.WeatherActivity;
 import com.zhj.bluetooth.sdkdemo.util.IntentUtil;
 import com.zhj.bluetooth.sdkdemo.util.PermissionUtil;
+import com.zhj.zhjsdkcustomized.bean.AppNotice;
 import com.zhj.zhjsdkcustomized.bean.BLEDevice;
-import com.zhj.zhjsdkcustomized.bean.DeviceState;
 import com.zhj.zhjsdkcustomized.bean.EcgHistoryData;
+import com.zhj.zhjsdkcustomized.bean.HealthHeartRate;
 import com.zhj.zhjsdkcustomized.bean.WarningInfo;
 import com.zhj.zhjsdkcustomized.ble.BleCallbackWrapper;
 import com.zhj.zhjsdkcustomized.ble.BleSdkWrapper;
+import com.zhj.zhjsdkcustomized.ble.ByteDataConvertUtil;
 import com.zhj.zhjsdkcustomized.ble.HandlerBleDataResult;
-import com.zhj.zhjsdkcustomized.ble.bluetooth.BleManager;
+import com.zhj.zhjsdkcustomized.ble.HealthHrDataHandler;
 import com.zhj.zhjsdkcustomized.ble.bluetooth.BluetoothLe;
 import com.zhj.zhjsdkcustomized.ble.bluetooth.DeviceCallback;
 import com.zhj.zhjsdkcustomized.ble.bluetooth.OnLeConnectListener;
 import com.zhj.zhjsdkcustomized.ble.bluetooth.OnLeWriteCharacteristicListener;
 import com.zhj.zhjsdkcustomized.ble.bluetooth.exception.ConnBleException;
 import com.zhj.zhjsdkcustomized.ble.bluetooth.exception.WriteBleException;
+import com.zhj.zhjsdkcustomized.util.BaseCmdUtil;
 import com.zhj.zhjsdkcustomized.util.Constants;
 import com.zhj.zhjsdkcustomized.util.LogUtil;
 import com.zhj.zhjsdkcustomized.util.SPHelper;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -128,7 +127,7 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                 if (resultCode == Constants.BLE_RESULT_CODE.SUCCESS) {
                     runOnUiThread(() -> checkBind());
                     BluetoothLe.getDefault().setOnConnectListener(MyListenner);
-                    //重连
+                    //reconnect
                     BluetoothLe.getDefault().reconnect(MainActivity.this);
                     BluetoothLe.getDefault().addDeviceCallback(new DeviceCallback() {
                         @Override
@@ -220,6 +219,44 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                 .build();
         WorkManager.getInstance(this).enqueue(mRequest);
 
+
+        //Call before sending a message
+        BleSdkWrapper.getDeviceState(new OnLeWriteCharacteristicListener() {
+            @Override
+            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_DEVICE_STATE){
+                    //You can close a message channel in the NoticeActivity page
+                    BleSdkWrapper.getNotice(new OnLeWriteCharacteristicListener() {
+                        @Override
+                        public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                            if(handlerBleDataResult.bluetooth_code == CODE_GET_NOTICE) {
+                                Log.d("FFFfg4thf44","notice:" + handlerBleDataResult.data);
+                                AppNotice appNotice = (AppNotice) handlerBleDataResult.data;
+                            }
+                        }
+
+                        @Override
+                        public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+
+                        }
+
+                        @Override
+                        public void onFailed(WriteBleException e) {
+                        }
+                    } );
+                }
+            }
+
+            @Override
+            public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+
+            }
+
+            @Override
+            public void onFailed(WriteBleException e) {
+
+            }
+        });
 
     }
 
@@ -321,155 +358,11 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
 
     @OnClick(R.id.btnSendPairing)
     void toSendPairing(){
-//        BleSdkWrapper.sendSos("123456","qwer" , new OnLeWriteCharacteristicListener() {
-//            @Override
-//            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-//
-//            }
-//
-//            @Override
-//            public void onFailed(WriteBleException e) {
-//
-//            }
-//        });
-//        List<Contacts> contacts = new ArrayList<>();
-//        for (int i = 0 ; i <1;i++){
-//            Contacts c = new Contacts();
-//            c.setName("dwad:"+i);
-//            c.setNumber("sdwad:"+i);
-//            contacts.add(c);
-//        }
-//        BleSdkWrapper.sendContacts(contacts, new OnLeWriteCharacteristicListener() {
-//            @Override
-//            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-//
-//            }
-//
-//            @Override
-//            public void onFailed(WriteBleException e) {
-//                LogUtil.d(e.toString());
-//            }
-//        });
         if(MyAppcation.getInstance().isConnected()){
             IntentUtil.goToActivity(this, Test.class);
         }else{
             showToast(getResources().getString(R.string.main_device_unconnected));
         }
-//        NetConnect.getUpdateInfo(this, "T02S90N2", "1.03", new BleCallbackWrapper() {
-//            @Override
-//            public void complete(int resultCode, Object o) {
-//                if(resultCode == Constants.BLE_RESULT_CODE.SUCCESS){
-//                    FirmwareUpdate update = (FirmwareUpdate) o;
-//                    LogUtil.d(update.toString());
-//                }else{
-//                    LogUtil.d("获取信息失败");
-//                }
-//            }
-//
-//            @Override
-//            public void setSuccess() {
-//
-//            }
-//        });
-//        NetConnect.getDialCenterInfo(this, "T04S90N7", new BleCallbackWrapper() {
-//
-//            @Override
-//            public void complete(int resultCode, Object o) {
-//                if(resultCode == Constants.BLE_RESULT_CODE.SUCCESS){
-//                    DicalDataBean dicalDataBean = (DicalDataBean) o;
-//                    LogUtil.d(dicalDataBean.toString());
-//                }else{
-//                    LogUtil.d("获取信息失败");
-//                }
-//            }
-//
-//            @Override
-//            public void setSuccess() {
-//
-//            }
-//        });
-//        NetConnect.getDialCenterInfoList(this, "T04S90N7", new BleCallbackWrapper() {
-//
-//            @Override
-//            public void complete(int resultCode, Object o) {
-//                if(resultCode == Constants.BLE_RESULT_CODE.SUCCESS){
-//                    DialCenterList dicalDataBean = (DialCenterList) o;
-//                    LogUtil.d(dicalDataBean.toString());
-//                }else{
-//                    LogUtil.d("获取信息失败");
-//                }
-//            }
-//
-//            @Override
-//            public void setSuccess() {
-//
-//            }
-//        });
-//        NetConnect.getDialCenterByModel(this, "T04S90N7", new BleCallbackWrapper() {
-//            @Override
-//            public void complete(int resultCode, Object o) {
-//                if(resultCode == Constants.BLE_RESULT_CODE.SUCCESS){
-//                    List<DialCenterDetail> dicalDataBean = (List<DialCenterDetail>) o;
-//                    LogUtil.d(dicalDataBean.toString());
-//                }else{
-//                    LogUtil.d("获取信息失败");
-//                }
-//            }
-//
-//            @Override
-//            public void setSuccess() {
-//
-//            }
-//        });
-
-//        BleSdkWrapper.getDialInfo(new OnLeWriteCharacteristicListener() {
-//            @Override
-//            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-//                DialInfoList dialInfoList = (DialInfoList) handlerBleDataResult.data;
-//                LogUtil.d(dialInfoList.getCurrentDial().getDialId()+"");
-//            }
-//
-//            @Override
-//            public void onFailed(WriteBleException e) {
-//
-//            }
-//        });
-//        BleSdkWrapper.getMettInfo(new OnLeWriteCharacteristicListener() {
-//            @Override
-//            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-//                Map<Integer, Integer> map = (Map<Integer, Integer>) handlerBleDataResult.data;
-//                for(Integer key : map.keySet()){
-//                    LogUtil.d("key:"+key+",value:"+map.get(key));
-//                }
-//            }
-//
-//            @Override
-//            public void onFailed(WriteBleException e) {
-//
-//            }
-//        });
-//        BleSdkWrapper.startTemperatureMonitoring(new OnLeWriteCharacteristicListener() {
-//            @Override
-//            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-//                LogUtil.d("开启成功");
-//            }
-//
-//            @Override
-//            public void onFailed(WriteBleException e) {
-//
-//            }
-//        });
-//        BleSdkWrapper.endTemperatureMonitoring(new OnLeWriteCharacteristicListener() {
-//            @Override
-//            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-//                LogUtil.d("结束成功");
-//            }
-//
-//            @Override
-//            public void onFailed(WriteBleException e) {
-//
-//            }
-//        });
     }
     @OnClick(R.id.btnGetSleep)
     void togGetSleep(){
@@ -765,11 +658,13 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
     void tvSetTime(){
         if(MyAppcation.getInstance().isConnected()){
             a2 = 0;
-            for (int k = 0; k < 20; k++) {
-                    BleSdkWrapper.setDeviceDate(2022, 10, 27, 2, 12, 23, new OnLeWriteCharacteristicListener() {
+//            for (int k = 0; k < 20; k++) {
+                    BleSdkWrapper.setDeviceDate(2023, 3, 3, 13, 42, 23, new OnLeWriteCharacteristicListener() {
                         @Override
                         public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                           Log.d("FFFfg4thf44", "1111111:" + handlerBleDataResult.bluetooth_code);
+                            if(handlerBleDataResult.bluetooth_code == CODE_SET_DEVICE_DATE) {
+                                Log.d("FFFfg4thf44", "1111111:" + handlerBleDataResult.bluetooth_code);
+                            }
                         }
 
                         @Override
@@ -782,25 +677,27 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
 
                         }
                     });
-                    BleSdkWrapper.setDeviceshock(new OnLeWriteCharacteristicListener() {
-                        @Override
-                        public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                            Log.d("FFFfg4thf44", "222222:" + handlerBleDataResult.bluetooth_code);
-//                                Log.d("FFFfg4thf44", "222222:" + a2 + " handlerBleDataResult:" + handlerBleDataResult.data);
-                                a2++;
-                        }
-
-                        @Override
-                        public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
-                            Log.d("FFFff44", "onSuccessCharac:");
-                        }
-
-                        @Override
-                        public void onFailed(WriteBleException e) {
-                            Log.d("FF45BH34", "e_veri:" + e);
-                        }
-                    });
-            }
+//                    BleSdkWrapper.setDeviceshock(new OnLeWriteCharacteristicListener() {
+//                        @Override
+//                        public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+//                            if(handlerBleDataResult.bluetooth_code == CODE_SET_DEVICE_SHOCK) {
+//                                Log.d("FFFfg4thf44", "222222:" + handlerBleDataResult.bluetooth_code);
+////                                Log.d("FFFfg4thf44", "222222:" + a2 + " handlerBleDataResult:" + handlerBleDataResult.data);
+//                                a2++;
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+//                            Log.d("FFFff44", "onSuccessCharac:");
+//                        }
+//
+//                        @Override
+//                        public void onFailed(WriteBleException e) {
+//                            Log.d("FF45BH34", "e_veri:" + e);
+//                        }
+//                    });
+//            }
 //            BleSdkWrapper.sendMessage(1, "eee", "rrrr", new OnLeWriteCharacteristicListener() {
 //                @Override
 //                public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
@@ -853,7 +750,9 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                     BleSdkWrapper.setDeviceshock(new OnLeWriteCharacteristicListener() {
                         @Override
                         public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                            if (handlerBleDataResult.bluetooth_code == BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_DEVICE_SHOCK) {
+                            if (handlerBleDataResult.bluetooth_code == CODE_SET_DEVICE_SHOCK) {
+
+
                                 Log.d("FF45BH34", "Set vibration successfully:" + a2);
                                 a2++;
                             }
@@ -861,7 +760,9 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
 
                         @Override
                         public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
-                            Log.d("FFFff44", "onSuccessCharac:");
+                            byte[] to = new byte[20];
+                            BaseCmdUtil.copy(bluetoothGattCharacteristic.getValue(), to);
+                            Log.d("FF45BH34", "onSuccessCharac:" + ByteDataConvertUtil.bytesToHexString(to));
                         }
 
                         @Override
@@ -869,12 +770,30 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                             Log.d("FF45BH34", "e_veri:" + e);
                         }
                     });
+                    BleSdkWrapper.getDeviceState(new OnLeWriteCharacteristicListener() {
+                        @Override
+                        public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                            if(handlerBleDataResult.bluetooth_code == CODE_GET_DEVICE_STATE) {
+                                BLEDevice bleDevice = (BLEDevice) handlerBleDataResult.data;
+                            }
+                        }
+
+                        @Override
+                        public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+
+                        }
+
+                        @Override
+                        public void onFailed(WriteBleException e) {
+
+                        }
+                    });
                 }
                 if(k >= 5) {
                     BleSdkWrapper.setDeviceDate(2022, 10, 27, 2, 12, 23, new OnLeWriteCharacteristicListener() {
                         @Override
                         public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                            if (handlerBleDataResult.bluetooth_code == BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_DEVICE_DATE) {
+                            if (handlerBleDataResult.bluetooth_code == CODE_SET_DEVICE_DATE) {
 
                                 Log.d("FF45BH34", "setDeviceDate:" + a3);
                                 a3++;
@@ -896,7 +815,7 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                     BleSdkWrapper.getDeviceState(new OnLeWriteCharacteristicListener() {
                         @Override
                         public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                            if (handlerBleDataResult.bluetooth_code == BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_DEVICE_STATE) {
+                            if (handlerBleDataResult.bluetooth_code == CODE_GET_DEVICE_STATE) {
 
                                 Log.d("FF45BH34", "setDeviceDate_222:" + a3);
                                 a3++;
@@ -935,9 +854,12 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                             @Override
                             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
 //                                BluetoothLe.getDefault().cancelTag("SETMESSAGE");
-                                b = 0;
+
                                 if(handlerBleDataResult.bluetooth_code == CODE_SEND_MESSAGE) {
-                                    Log.d("FF4d5fB5r34H34", "发送成功----a:" + a + "   i:" + i);
+                                    b = 0;
+                                    if(handlerBleDataResult.isComplete) {
+                                        Log.d("FFG32g3243", "sendMessage----a:" + a + "   i:" + i);
+                                    }
                                     a++;
                                 }
                             }
@@ -954,6 +876,53 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                                 a++;
                             }
                         });
+                            BleSdkWrapper.setDeviceshock(new OnLeWriteCharacteristicListener() {
+                                @Override
+                                public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                                    if (handlerBleDataResult.bluetooth_code == CODE_SET_DEVICE_SHOCK) {
+                                        if(handlerBleDataResult.isComplete) {
+                                            Log.d("FFG32g3243", "setDeviceshock:" + handlerBleDataResult.bluetooth_code);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+                                }
+
+                                @Override
+                                public void onFailed(WriteBleException e) {
+                                }
+                            });
+
+                        BleSdkWrapper.getRealtimeHeartRate(new OnLeWriteCharacteristicListener() {
+                            @Override
+                            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                                if (handlerBleDataResult.bluetooth_code == CODE_GET_REALTIME_HEARTRATE) {
+                                    Log.d("FFG32g3243", "getRealtimeHeartRate:" + handlerBleDataResult.bluetooth_code);
+                                }
+                            }
+
+                            @Override
+                            public void onSuccessCharac(BluetoothGattCharacteristic bluetoothGattCharacteristic) {
+                                HealthHrDataHandler healthHrDataHandler=new HealthHrDataHandler();
+                                byte[] to = new byte[20];
+                                BaseCmdUtil.copy(bluetoothGattCharacteristic.getValue(), to);
+                                int flag_start=to[0]&255;
+                                if(flag_start == FLAT_START_GET_HEART_RATE) {
+                                    HealthHeartRate healthHeartRate = healthHrDataHandler.handlerCurrent(to);
+                                    //Get heart rate value
+                                    Log.d("FFG3232r3", "heart_data:" + healthHeartRate.getSilentHeart());
+                                }
+                            }
+
+                            @Override
+                            public void onFailed(WriteBleException e) {
+                                Log.d("FFG3232r3", "e:" + e);
+                            }
+                        });
+
+
                     } else {
                         showToast(getResources().getString(R.string.main_device_unconnected));
                     }

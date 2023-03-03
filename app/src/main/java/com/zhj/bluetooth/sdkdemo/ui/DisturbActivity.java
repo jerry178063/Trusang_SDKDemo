@@ -1,5 +1,8 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_DISTURB;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_DISTURB;
+
 import android.app.TimePickerDialog;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.widget.TextView;
@@ -51,8 +54,10 @@ public class DisturbActivity extends BaseActivity {
             BleSdkWrapper.setDisturbSetting(sleepBean, new OnLeWriteCharacteristicListener() {
                 @Override
                 public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                    showToast(getResources().getString(R.string.toast_set_success));
-                    DisturbActivity.this.finish();
+                    if(handlerBleDataResult.bluetooth_code == CODE_SET_DISTURB) {
+                        showToast(getResources().getString(R.string.toast_set_success));
+                        DisturbActivity.this.finish();
+                    }
                 }
 
                 @Override
@@ -70,11 +75,13 @@ public class DisturbActivity extends BaseActivity {
         BleSdkWrapper.getDisturbSetting(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                SleepBeans sleepBeans = (SleepBeans) handlerBleDataResult.data;
-                sleepBean = sleepBeans.getSleepBeans().get(0);
-                mToggleButton.setSwitchState(sleepBean.isSwitch());
-                tvRemindStartTime.setText(StringUtils.format("%02d",sleepBean.getStartHour())+":"+StringUtils.format("%02d",sleepBean.getStartMin()));
-                tvRemindEndTime.setText(StringUtils.format("%02d",sleepBean.getEndHour())+":"+StringUtils.format("%02d",sleepBean.getEndMin()));
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_DISTURB) {
+                    SleepBeans sleepBeans = (SleepBeans) handlerBleDataResult.data;
+                    sleepBean = sleepBeans.getSleepBeans().get(0);
+                    mToggleButton.setSwitchState(sleepBean.isSwitch());
+                    tvRemindStartTime.setText(StringUtils.format("%02d", sleepBean.getStartHour()) + ":" + StringUtils.format("%02d", sleepBean.getStartMin()));
+                    tvRemindEndTime.setText(StringUtils.format("%02d", sleepBean.getEndHour()) + ":" + StringUtils.format("%02d", sleepBean.getEndMin()));
+                }
             }
 
             @Override

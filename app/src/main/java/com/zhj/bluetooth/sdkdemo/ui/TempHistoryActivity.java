@@ -1,5 +1,7 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_HISTORY_TEMP;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,18 +55,20 @@ public class TempHistoryActivity extends BaseActivity {
         BleSdkWrapper.getHistoryTemp(year, month, day, new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                if (handlerBleDataResult.isComplete){
-                    //Is there any more historical data? If so, decrease the number of days by 1 and continue to obtain
-                    if (handlerBleDataResult.hasNext){
-                        List<TempInfo> tempInfos = (List<TempInfo>) handlerBleDataResult.data;
-                        tempInfoArrayList.addAll(tempInfos);
-                        calendar.add(Calendar.DATE,-1);
-                        TempHistoryAdapter tempHistoryAdapter = new TempHistoryAdapter(TempHistoryActivity.this,tempInfoArrayList);
-                        mRecyclerView.setAdapter(tempHistoryAdapter);
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_HISTORY_TEMP) {
+                    if (handlerBleDataResult.isComplete) {
+                        //Is there any more historical data? If so, decrease the number of days by 1 and continue to obtain
+                        if (handlerBleDataResult.hasNext) {
+                            List<TempInfo> tempInfos = (List<TempInfo>) handlerBleDataResult.data;
+                            tempInfoArrayList.addAll(tempInfos);
+                            calendar.add(Calendar.DATE, -1);
+                            TempHistoryAdapter tempHistoryAdapter = new TempHistoryAdapter(TempHistoryActivity.this, tempInfoArrayList);
+                            mRecyclerView.setAdapter(tempHistoryAdapter);
 //                        syncTempHistory(false);
-                    }else{
-                        TempHistoryAdapter tempHistoryAdapter = new TempHistoryAdapter(TempHistoryActivity.this,tempInfoArrayList);
-                        mRecyclerView.setAdapter(tempHistoryAdapter);
+                        } else {
+                            TempHistoryAdapter tempHistoryAdapter = new TempHistoryAdapter(TempHistoryActivity.this, tempInfoArrayList);
+                            mRecyclerView.setAdapter(tempHistoryAdapter);
+                        }
                     }
                 }
             }

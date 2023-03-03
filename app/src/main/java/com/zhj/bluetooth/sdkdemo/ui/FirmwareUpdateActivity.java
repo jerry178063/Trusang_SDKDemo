@@ -1,5 +1,7 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_ENTER_OTA;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.NotificationManager;
@@ -276,11 +278,14 @@ public class FirmwareUpdateActivity extends BaseActivity {
 
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                BluetoothLe.getDefault().enableNotification(false, BluetoothUUID.SERVICE_PAIR,
-                        new UUID[]{BluetoothUUID.READ});
-                BluetoothLe.getDefault().close();
-                ThreadUtil.delayTask(() -> {
-                    startDfu();},1000);
+                if(handlerBleDataResult.bluetooth_code == CODE_ENTER_OTA) {
+                    BluetoothLe.getDefault().enableNotification(false, BluetoothUUID.SERVICE_PAIR,
+                            new UUID[]{BluetoothUUID.READ});
+                    BluetoothLe.getDefault().close();
+                    ThreadUtil.delayTask(() -> {
+                        startDfu();
+                    }, 1000);
+                }
             }
 
             @Override

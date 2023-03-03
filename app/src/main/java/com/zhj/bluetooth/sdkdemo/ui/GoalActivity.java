@@ -1,5 +1,7 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_TARGET;
+
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.widget.TextView;
 
@@ -46,15 +48,17 @@ public class GoalActivity extends BaseActivity {
         BleSdkWrapper.getTarget(new OnLeWriteCharacteristicListener() {
             @Override
             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-                Goal goal = (Goal) handlerBleDataResult.data;
-                tvSleepTimeState.setText(getResources().getString(R.string.target_info_sleep_swith)+goal.sleepstate);//0x01: ON 0x00: OFF
-                tvSleepTime.setText(getResources().getString(R.string.target_info_sleep_time)+goal.goalSleep);//Unit hour
-                tvStepsState.setText(getResources().getString(R.string.target_info_steps_swith)+goal.stepstate);//0x01: ON 0x00: OFF
-                tvSteps.setText(getResources().getString(R.string.target_info_steps)+goal.goalStep);//Unit step
-                tvCalState.setText(getResources().getString(R.string.target_info_cal_swith)+goal.calstate);//0x01: ON 0x00: OFF
-                tvCal.setText(getResources().getString(R.string.target_info_cal)+goal.goalCal);//Unit kilocalorie
-                tvDistanceState.setText(getResources().getString(R.string.target_info_distance_swith)+goal.distancestate);//0x01: ON 0x00: OFF
-                tvDistance.setText(getResources().getString(R.string.target_info_distance)+goal.goalDistanceKm+"KM");//Unit kilometer
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_TARGET) {
+                    Goal goal = (Goal) handlerBleDataResult.data;
+                    tvSleepTimeState.setText(getResources().getString(R.string.target_info_sleep_swith) + goal.sleepstate);//0x01: ON 0x00: OFF
+                    tvSleepTime.setText(getResources().getString(R.string.target_info_sleep_time) + goal.goalSleep);//Unit hour
+                    tvStepsState.setText(getResources().getString(R.string.target_info_steps_swith) + goal.stepstate);//0x01: ON 0x00: OFF
+                    tvSteps.setText(getResources().getString(R.string.target_info_steps) + goal.goalStep);//Unit step
+                    tvCalState.setText(getResources().getString(R.string.target_info_cal_swith) + goal.calstate);//0x01: ON 0x00: OFF
+                    tvCal.setText(getResources().getString(R.string.target_info_cal) + goal.goalCal);//Unit kilocalorie
+                    tvDistanceState.setText(getResources().getString(R.string.target_info_distance_swith) + goal.distancestate);//0x01: ON 0x00: OFF
+                    tvDistance.setText(getResources().getString(R.string.target_info_distance) + goal.goalDistanceKm + "KM");//Unit kilometer
+                }
             }
 
             @Override
