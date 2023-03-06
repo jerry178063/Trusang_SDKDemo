@@ -25,6 +25,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TimeUtils;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
@@ -91,9 +92,11 @@ import com.zhj.zhjsdkcustomized.util.BaseCmdUtil;
 import com.zhj.zhjsdkcustomized.util.Constants;
 import com.zhj.zhjsdkcustomized.util.LogUtil;
 import com.zhj.zhjsdkcustomized.util.SPHelper;
+import com.zhj.zhjsdkcustomized.util.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -844,23 +847,26 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
     //send message
     int b = 0;
     int i = 0;
+    int h = 0;
+    int hg = 0;
 
     @OnClick({R.id.tvSendMes})
     void tvSendMes(){
         a = 0;
             for (i = 0; i < 10; i++) {
+                h = i;
                     if (MyAppcation.getInstance().isConnected()) {
                         BleSdkWrapper.sendMessage(1, "eee", "rrrr_a:" + a, new OnLeWriteCharacteristicListener() {
                             @Override
                             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
 //                                BluetoothLe.getDefault().cancelTag("SETMESSAGE");
-
                                 if(handlerBleDataResult.bluetooth_code == CODE_SEND_MESSAGE) {
                                     b = 0;
-                                    if(handlerBleDataResult.isComplete) {
-                                        Log.d("FFG32g3243", "sendMessage----a:" + a + "   i:" + i);
-                                    }
                                     a++;
+                                    if(handlerBleDataResult.isComplete) {
+                                        Log.d("FFG3232fr3", "sendMessage----a:" + a);
+                                    }
+
                                 }
                             }
 
@@ -879,7 +885,9 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                             BleSdkWrapper.setDeviceshock(new OnLeWriteCharacteristicListener() {
                                 @Override
                                 public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+
                                     if (handlerBleDataResult.bluetooth_code == CODE_SET_DEVICE_SHOCK) {
+                                        Log.d("FFG323fd2fr3", "次数2:" + hg++);
                                         if(handlerBleDataResult.isComplete) {
                                             Log.d("FFG32g3243", "setDeviceshock:" + handlerBleDataResult.bluetooth_code);
                                         }
@@ -898,8 +906,13 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                         BleSdkWrapper.getRealtimeHeartRate(new OnLeWriteCharacteristicListener() {
                             @Override
                             public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+
                                 if (handlerBleDataResult.bluetooth_code == CODE_GET_REALTIME_HEARTRATE) {
-                                    Log.d("FFG32g3243", "getRealtimeHeartRate:" + handlerBleDataResult.bluetooth_code);
+                                    Log.d("FFG323fd2fr3", "次数3:" + hg++);
+                                    Log.d("FFG32g3243", "getRealtimeHeartRate:" + handlerBleDataResult.data);
+                                    HealthHeartRate healthHeartRate = (HealthHeartRate) handlerBleDataResult.data;
+//                                    Log.d("FFG3232ffr3", "heart_data_success:" + healthHeartRate.getSilentHeart());
+                                    Log.d("FFG3232ffr3", "heart_data_success:" + TimeUtil.timeStamp2Date(healthHeartRate.getDate()));
                                 }
                             }
 
@@ -912,7 +925,8 @@ public class MainActivity extends BaseActivity implements PermissionUtil.Requset
                                 if(flag_start == FLAT_START_GET_HEART_RATE) {
                                     HealthHeartRate healthHeartRate = healthHrDataHandler.handlerCurrent(to);
                                     //Get heart rate value
-                                    Log.d("FFG3232r3", "heart_data:" + healthHeartRate.getSilentHeart());
+                                    a++;
+                                    Log.d("FFG3232fr3", "heart_data:" + healthHeartRate.getSilentHeart() +" a:" + a);
                                 }
                             }
 
