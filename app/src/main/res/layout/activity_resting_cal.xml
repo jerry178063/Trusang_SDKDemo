@@ -115,12 +115,12 @@
         android:id="@+id/btnSub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btn_submit"
-        android:textColor="@color/white"
-        android:layout_alignParentRight="true"
         android:layout_below="@id/llLayout2"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="@dimen/size20dp"
-        android:background="@drawable/btn_submit_bg"/>
+        android:background="@drawable/btn_submit_bg"
+        android:text="@string/btn_submit"
+        android:textColor="@color/white" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/mRecyclerView"
