@@ -1,5 +1,9 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_SPORT_MODE;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_SPORT_MODE;
+
+import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,6 +53,47 @@ public class SportModeActivity extends BaseActivity implements SportModeAdapter.
             List<SportModeBean> sportModeBeans = new ArrayList<>();
             sportModeBeans.addAll(openSport);
             sportModeBeans.addAll(closeSport);
+            BleSdkWrapper.setSportMode(sportModeBeans, new OnLeWriteCharacteristicListener() {
+                @Override
+                public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                    if(handlerBleDataResult.bluetooth_code == CODE_SET_SPORT_MODE) {
+                        showToast("set success");
+                        SportModeActivity.this.finish();
+                    }
+                }
+
+                @Override
+                public void onFailed(WriteBleException e) {
+
+                }
+            });
+        });
+        BleSdkWrapper.getSportMode(new OnLeWriteCharacteristicListener() {
+            @Override
+            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                if(handlerBleDataResult.bluetooth_code == CODE_GET_SPORT_MODE) {
+                    List<SportModeBean> sportModeBeans = (List<SportModeBean>) handlerBleDataResult.data;
+                    for (SportModeBean sportModeBean : sportModeBeans) {
+                        if (sportModeBean.isSportStaus()) {
+                            openSport.add(sportModeBean);
+                        } else {
+                            closeSport.add(sportModeBean);
+                        }
+                    }
+                    showAdapter = new SportModeAdapter(SportModeActivity.this, openSport);
+                    mRecyclerViewShow.setAdapter(showAdapter);
+                    showAdapter.setmClickListener(SportModeActivity.this);
+                    hideAdapter = new SportModeAdapter(SportModeActivity.this, closeSport);
+                    mRecyclerViewHide.setAdapter(hideAdapter);
+                    hideAdapter.setmClickListener(SportModeActivity.this);
+                    Log.d("ffe232","openSport:" + openSport.size());
+                }
+            }
+
+            @Override
+            public void onFailed(WriteBleException e) {
+
+            }
         });
     }
 

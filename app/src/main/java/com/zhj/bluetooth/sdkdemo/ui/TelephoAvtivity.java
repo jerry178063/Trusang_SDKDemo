@@ -27,6 +27,8 @@ import com.zhj.zhjsdkcustomized.ble.CmdHelper;
 import com.zhj.zhjsdkcustomized.ble.DeviceCallbackWrapper;
 import com.zhj.zhjsdkcustomized.ble.bluetooth.BluetoothLe;
 
+import java.util.List;
+
 public class TelephoAvtivity extends BaseActivity {
 
     private static final int REQUEST_NOTICE_PERMISSION_CODE = 0x12;
@@ -60,21 +62,24 @@ public class TelephoAvtivity extends BaseActivity {
             }
         }
         // If CALL_ PHONE permission is not granted
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.ANSWER_PHONE_CALLS)!= PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.MODIFY_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS)!= PackageManager.PERMISSION_GRANTED
-                || ContextCompat.checkSelfPermission(this, Manifest.permission.MEDIA_CONTENT_CONTROL)!= PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.ANSWER_PHONE_CALLS)!= PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.MODIFY_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.PROCESS_OUTGOING_CALLS)!= PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.MEDIA_CONTENT_CONTROL)!= PackageManager.PERMISSION_GRANTED) {
 
             // Request permission
             // Permissions
             // RequestCode: application-specific request code to match and report to OnRequestPermissionsResultCallback # onRequestPermissionsResult (int, String [], int [])}
             // That is, the OnRequestPermissionResult() method of the following callback
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.ANSWER_PHONE_CALLS
-                    ,Manifest.permission.MODIFY_PHONE_STATE,Manifest.permission.PROCESS_OUTGOING_CALLS,Manifest.permission.MEDIA_CONTENT_CONTROL},10010);
-            Log.d("FF4534", "request_ Permission(): Applying for permission!");
+//            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.ANSWER_PHONE_CALLS
+//                    ,Manifest.permission.MODIFY_PHONE_STATE,Manifest.permission.PROCESS_OUTGOING_CALLS,Manifest.permission.MEDIA_CONTENT_CONTROL},10010);
+
+            requestPermissions(1200, new String[]{Manifest.permission.READ_PHONE_STATE,Manifest.permission.ANSWER_PHONE_CALLS
+                    ,Manifest.permission.MODIFY_PHONE_STATE,Manifest.permission.PROCESS_OUTGOING_CALLS,Manifest.permission.MEDIA_CONTENT_CONTROL});
+            Log.d(TAG, "request_ Permission(): Applying for permission!");
         }else {
-            Log.d("FF4534", "request_ Permission(): You already have permission!");
+            Log.d(TAG, "request_ Permission(): You already have permission!");
         }
         BluetoothLe.getDefault().addDeviceCallback(deviceCallback);
 
@@ -83,7 +88,8 @@ public class TelephoAvtivity extends BaseActivity {
         @SuppressLint("MissingPermission")
         @Override
         public void answerRingingCall() {
-            BluetoothLe.getDefault().writeDataToCharacteristic(CmdHelper.answerRingingCallToDevice());
+            List<byte[]> datas2 = CmdHelper.spliteData(CmdHelper.answerRingingCallToDevice());
+            BluetoothLe.getDefault().writeDataToCharacteristic(datas2);
             TelecomManager tm = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 tm = (TelecomManager) TelephoAvtivity.this.getSystemService(Context.TELECOM_SERVICE);
@@ -96,7 +102,8 @@ public class TelephoAvtivity extends BaseActivity {
 
         @Override
         public void endRingingCall() {
-            BluetoothLe.getDefault().writeDataToCharacteristic(CmdHelper.endRingingCallToDevice());
+            List<byte[]> datas2 = CmdHelper.spliteData(CmdHelper.endRingingCallToDevice());
+            BluetoothLe.getDefault().writeDataToCharacteristic(datas2);
             PhoneUtil.endCall(TelephoAvtivity.this);
         }
     };
@@ -119,7 +126,7 @@ public class TelephoAvtivity extends BaseActivity {
                         TelephoAvtivity.this.finish();
                     });
         }else{
-            Log.d("FF332","Listen to the bracelet broadcast");
+            Log.d(TAG,"Listen to the bracelet broadcast");
             Intent assistIntent = new Intent(this, PhoneReceiver.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(assistIntent);

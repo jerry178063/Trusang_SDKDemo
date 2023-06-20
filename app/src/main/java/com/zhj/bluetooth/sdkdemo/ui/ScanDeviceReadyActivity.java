@@ -300,7 +300,8 @@ public class ScanDeviceReadyActivity extends BaseActivity implements BaseAdapter
                 .startScan(this,new OnLeScanListener() {
                     @Override
                     public void onScanResult(BluetoothDevice bluetoothDevice, int rssi, ScanRecord scanRecord) {
-                        Log.d("GG343","Scan results:" + bluetoothDevice.getAddress());
+                        Log.d(TAG,"Scan results:" + bluetoothDevice.getAddress());
+                        Log.d("gff33","Scan results:" + bluetoothDevice.getAddress());
                         BLEDevice device = new BLEDevice();
                         device.mDeviceAddress = bluetoothDevice.getAddress();
                         if (ActivityCompat.checkSelfPermission(ScanDeviceReadyActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
@@ -334,19 +335,19 @@ public class ScanDeviceReadyActivity extends BaseActivity implements BaseAdapter
                     @Override
                     public void onBatchScanResults(List<ScanResult> results) {
                         Log.i(TAG, "Scan to device:" + results.toString());
-                        Log.d("GG343","Scan to device:" + results.toString());
+                        Log.d(TAG,"Scan to device:" + results.toString());
                     }
 
                     @Override
                     public void onScanCompleted() {
                         mBluetoothLe.stopScan();
                         mRefreshLayout.onComplete();
-                        Log.d("GG343","Scan completed:");
+                        Log.d(TAG,"Scan completed:");
                     }
 
                     @Override
                     public void onScanFailed(ScanBleException e) {
-                        Log.d("GG343","Scan failed:" + e);
+                        Log.d(TAG,"Scan failed:" + e);
                         Log.e(TAG, "Scan error:" + e.toString());
                         onScanCompleted();
                         mBluetoothLe.stopScan();

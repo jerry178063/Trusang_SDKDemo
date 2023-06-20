@@ -13,6 +13,7 @@ import com.zhj.bluetooth.sdkdemo.MyAppcation;
 
 public class ServiceWorker extends Worker {
 
+    private String TAG = "ServiceWorker";
     public ServiceWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
     }
@@ -23,11 +24,11 @@ public class ServiceWorker extends Worker {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             MyAppcation.getInstance().startForegroundService(new Intent(MyAppcation.getInstance(), IntelligentNotificationService.class));
             MyAppcation.getInstance().startForegroundService(new Intent(MyAppcation.getInstance(), AssistService.class));
-            Log.d("FF332","Listen to the bracelet broadcast.222..");
+            Log.d(TAG,"Listen to the bracelet broadcast.222..");
         } else {
             MyAppcation.getInstance().startService(new Intent(MyAppcation.getInstance(), IntelligentNotificationService.class));
             MyAppcation.getInstance().startService(new Intent(MyAppcation.getInstance(), AssistService.class));
-            Log.d("FF332","Listen to the bracelet broadcast.333..");
+            Log.d(TAG,"Listen to the bracelet broadcast.333..");
         }
         return null;
     }

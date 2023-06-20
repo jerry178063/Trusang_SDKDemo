@@ -3,9 +3,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <androidx.recyclerview.widget.RecyclerView
+
+
+    <TextView
+        android:id="@+id/textHistoryData"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="@dimen/size15dp"
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/mRecyclerView"/>
+        android:layout_height="wrap_content"/>
+
 
 </LinearLayout>

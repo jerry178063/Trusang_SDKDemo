@@ -1,5 +1,10 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_ALARM_CLOCK;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_ALARM_CLOCK;
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_SET_WEATHER;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -57,17 +62,20 @@ public class WeatherActivity extends BaseActivity {
             weatherBeanAfterTomorrow.setMaxTemp(Integer.parseInt(etWeatherTemp.getText().toString())+3);
             weatherBeanAfterTomorrow.setMinTemp(Integer.parseInt(etWeatherTemp.getText().toString())-3);
             LogUtil.d("type:"+weatherBeanTomorrow.getWeatherType()+","+weatherBeanAfterTomorrow.getWeatherType());
-//            BleSdkWrapper.setWeather(weatherBean,new OnLeWriteCharacteristicListener() {
-//                @Override
-//                public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
-//
-//                }
-//
-//                @Override
-//                public void onFailed(WriteBleException e) {
-//
-//                }
-//            });
+            BleSdkWrapper.setWeather(weatherBean,new OnLeWriteCharacteristicListener() {
+                @Override
+                public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                    if(handlerBleDataResult.bluetooth_code == CODE_SET_WEATHER) {
+                        Log.d("ggfd33", "CODE_SET_WEATHER");
+                    }
+
+                }
+
+                @Override
+                public void onFailed(WriteBleException e) {
+
+                }
+            });
         });
 
         etWeatherUnit.setText(weatherBean.getTempUnit()+"");

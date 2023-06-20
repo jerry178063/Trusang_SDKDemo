@@ -1,7 +1,6 @@
 package com.zhj.bluetooth.sdkdemo.base;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
 import android.os.Build;
@@ -123,6 +122,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Permissi
         params.width = RelativeLayout.LayoutParams.MATCH_PARENT;
         params.height = ScreenUtil.getStatusHeight(this);
         bar_bg.setLayoutParams(params);
+
         StatusBarUtil.setTranslucentForImageView(this, 0,titleBg);
         initView();
         permissionUtil=new PermissionUtil();
@@ -149,7 +149,6 @@ public abstract class BaseActivity extends AppCompatActivity implements Permissi
      * Initialize control
      */
     protected void initView() {
-
     }
 
     protected void showToast(final String content) {
@@ -178,7 +177,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Permissi
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        permissionUtil.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        if(permissionUtil != null) {
+            permissionUtil.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
     public void requestPermissionsSuccess(int requestCode){
 

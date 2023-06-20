@@ -41,7 +41,7 @@ public class AssistService extends Service {
     private boolean hasFirstReigsterPhone;
     private boolean isCommingPhone = false;
     private boolean isRemind = false;
-
+    private String TAG = "AssistService";
     /**
      * All SMS messages
      */
@@ -118,7 +118,7 @@ public class AssistService extends Service {
     public void onCreate() {
         super.onCreate();
         LogUtil.d("onCreate ");
-        Log.d("FF332","assitservice_oncreate");
+        Log.d(TAG,"assitservice_oncreate");
         BluetoothLe.getDefault().addDeviceCallback(new DeviceCallbackWrapper() {
             @Override
             public void findPhone() {

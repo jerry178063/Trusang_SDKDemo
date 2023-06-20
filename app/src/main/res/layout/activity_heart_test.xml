@@ -18,12 +18,13 @@
             android:layout_height="wrap_content"
             android:text="@string/temp_test_swith"
             android:layout_centerVertical="true"/>
+
         <com.zhj.bluetooth.sdkdemo.util.CustomToggleButton
             android:id="@+id/mSwitch"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 
     <Button

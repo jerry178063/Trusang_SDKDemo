@@ -163,16 +163,16 @@ public class PhoneUtil {
         if (! audioManager.isWiredHeadsetOn()) {
             //4.1 The above systems limit some permissions, and use Samsung version 4.1 test prompt warning:Permission Denial: not allowed to send broadcast android.intent.action.HEADSET_PLUG from pid=1324, uid=10017
 //It should be noted here that if the permission "android.permission.CALL_PRIVLEGED" is added when sending a broadcast, the permission should also be added when accepting the broadcast. However, it seems that this permission can only be obtained by system applications in versions above 4.1. During the test, the customized receiver could not accept this broadcast. Later, the permission was removed and set to NULL to listen.
-            Log.d("FF4533","No headset");
+            Log.d(TAG,"No headset");
             if(Build.VERSION.SDK_INT >=15 ){
-                Log.d("FF4533",">=15");
+                Log.d(TAG,">=15");
                 Intent meidaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
                 KeyEvent keyEvent = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK);
                 meidaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT,keyEvent);
                 context.sendOrderedBroadcast(meidaButtonIntent, "android.permission.CALL_PRIVILEGED");
             }else{
 // The following applies to Android 2.3 and above, but the test found that 4.1 does not work.
-                Log.d("FF4533","<15");
+                Log.d(TAG,"<15");
                 Intent localIntent1 = new Intent(Intent.ACTION_HEADSET_PLUG);
                 localIntent1.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 localIntent1.putExtra("state", 1);
@@ -199,7 +199,7 @@ public class PhoneUtil {
             }
 
         } else {
-            Log.d("FF4533","Plug in the headset");
+            Log.d(TAG,"Plug in the headset");
             Intent meidaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
             KeyEvent keyEvent = new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HEADSETHOOK);
             meidaButtonIntent.putExtra(Intent.EXTRA_KEY_EVENT,keyEvent);
@@ -217,9 +217,9 @@ public class PhoneUtil {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {  //2.3 or above systems
             answerRingingCallWithBroadcast(context,telephonyManager);
 //            answerRingingCallWithBroadcast(context);
-            Log.d("FF4533","Answering calls>2.3");
+            Log.d(TAG,"Answering calls>2.3");
         } else {
-            Log.d("FF4533","Answer phone<2.3");
+            Log.d(TAG,"Answer phone<2.3");
             answerRingingCallWithReflect(context);
         }
     }

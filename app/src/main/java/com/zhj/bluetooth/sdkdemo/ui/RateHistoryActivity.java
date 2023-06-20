@@ -1,13 +1,19 @@
 package com.zhj.bluetooth.sdkdemo.ui;
 
+import static com.zhj.zhjsdkcustomized.ble.BleSdkWrapper.BLUETOOTH_CODE.CODE_GET_HISTROY_SENSOR;
+
+import android.util.Log;
+
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.zhj.bluetooth.sdkdemo.R;
 import com.zhj.bluetooth.sdkdemo.base.BaseActivity;
 import com.zhj.bluetooth.sdkdemo.ui.adapter.RateHistoryAdapter;
 import com.zhj.zhjsdkcustomized.bean.HealthActivity;
 import com.zhj.zhjsdkcustomized.bean.HealthHeartRateItem;
+import com.zhj.zhjsdkcustomized.bean.SensorHistoryBean;
 import com.zhj.zhjsdkcustomized.ble.BleCallback;
 import com.zhj.zhjsdkcustomized.ble.BleSdkWrapper;
 import com.zhj.zhjsdkcustomized.ble.HandlerBleDataResult;
@@ -35,6 +41,24 @@ public class RateHistoryActivity extends BaseActivity {
         titleName.setText(getResources().getString(R.string.heart_history_title));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         syncHeartHistory(true);
+
+        BleSdkWrapper.getHistroySensor(2023, 3, 10, 1, 10, 10, 5260, new OnLeWriteCharacteristicListener() {
+            @Override
+            public void onSuccess(HandlerBleDataResult handlerBleDataResult) {
+                if (handlerBleDataResult.bluetooth_code == CODE_GET_HISTROY_SENSOR) {
+                    SensorHistoryBean sensorHistoryBean = (SensorHistoryBean) handlerBleDataResult.data;
+                    Log.d(TAG, "sensorHistoryBean:" + new Gson().toJson(sensorHistoryBean));
+                    List<SensorHistoryBean.HeartList> samplingList = sensorHistoryBean.getHeartList();
+                    Log.d(TAG, "samplingList_size:" + samplingList.size());
+                }
+            }
+
+            @Override
+            public void onFailed(WriteBleException e) {
+                Log.d(TAG, "e:" + e);
+            }
+        });
+
     }
     List<HealthHeartRateItem> healthHeartRateItemsAll = new ArrayList<>();
     Calendar calendar;
